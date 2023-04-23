@@ -34,9 +34,8 @@ bot.on("message", async (ctx) => {
     await axios
       .request(options)
       // .then((response) => ctx.replyWithAudio(response.data.link))
-      .then((response) => ctx.replyWithAudio(response.data.link))
+      .then((response) => ctx.reply(response.data.link))
       .catch((error) => {
-        ctx.reply(error)
         ctx.reply("Возникла ошибка. Повторите попытку");
         console.error(error);
       });
