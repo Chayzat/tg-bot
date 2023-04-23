@@ -2,6 +2,13 @@ require("dotenv").config();
 const { Telegraf } = require("telegraf");
 const axios = require("axios");
 
+
+exports.handler = async (event) => {
+  console.log("Received an update from Telegram!", event.body);
+  return { statusCode: 200 };
+};
+
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 bot.start((ctx) => ctx.reply("Welcome"));
