@@ -1,18 +1,6 @@
-// require("dotenv").config();
+require("dotenv").config();
 // const { Telegraf } = require("telegraf");
-const axios = require("axios");
-
-
-exports.handler = async (event) => {
-  console.log("Received an update from Telegram!", event.body);
-  return { statusCode: 200 };
-};
-
-await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-  chat_id: JSON.parse(event.body).message.chat.id,
-  text: "I got your message!",
-});
-
+// const axios = require("axios");
 
 // const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -62,3 +50,36 @@ await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessa
 
 // process.once("SIGINT", () => bot.stop("SIGINT"));
 // process.once("SIGTERM", () => bot.stop("SIGTERM"));
+
+
+const { Telegraf } = require("telegraf")
+const bot = new Telegraf(process.env.BOT_TOKEN)
+
+bot.start(ctx => {
+  console.log("Received /start command")
+  try {
+      ctx.reply("Congrats! You've connected to Netlify!")
+  } catch (e) {
+      console.error("error in start action:", e)
+      ctx.reply("Error occured")
+  }
+})
+
+bot.command('thumbsup', async (ctx) => {
+    try {
+        ctx.reply('Here you go 👍!')
+    } catch (error) {
+        console.log('error', error)
+        ctx.reply('error sending image')
+    }
+})
+
+exports.handler = async event => {
+  try {
+    await bot.handleUpdate(JSON.parse(event.body))
+    return { statusCode: 200, body: "" }
+  } catch (e) {
+    console.error("error in handler:", e)
+    return { statusCode: 400, body: "This endpoint is meant for bot and telegram communication" }
+  }
+}
