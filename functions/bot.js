@@ -1,11 +1,11 @@
 require("dotenv").config();
-// const { Telegraf } = require("telegraf");
-// const axios = require("axios");
+const axios = require("axios");
 
-// const bot = new Telegraf(process.env.BOT_TOKEN);
+const { Telegraf } = require("telegraf")
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
-// bot.start((ctx) => ctx.reply("Welcome"));
-// bot.help((ctx) => ctx.reply("Send me a link to the video on YouTube"));
+bot.start((ctx) => ctx.reply("Welcome"));
+bot.help((ctx) => ctx.reply("Send me a link to the video on YouTube"));
 
 // const getID = (url) => {
 //   const regx = url.match(/v=[\w\-\_]{11}|e\/[\w\-\_]{11}/gi);
@@ -51,19 +51,15 @@ require("dotenv").config();
 // process.once("SIGINT", () => bot.stop("SIGINT"));
 // process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
-
-const { Telegraf } = require("telegraf")
-const bot = new Telegraf(process.env.BOT_TOKEN)
-
-bot.start(ctx => {
-  console.log("Received /start command")
-  try {
-      ctx.reply("Congrats! You've connected to Netlify!")
-  } catch (e) {
-      console.error("error in start action:", e)
-      ctx.reply("Error occured")
-  }
-})
+// bot.start(ctx => {
+//   console.log("Received /start command")
+//   try {
+//       ctx.reply("Congrats! You've connected to Netlify!")
+//   } catch (e) {
+//       console.error("error in start action:", e)
+//       ctx.reply("Error occured")
+//   }
+// })
 
 bot.command('thumbsup', async (ctx) => {
     try {
