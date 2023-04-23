@@ -7,17 +7,24 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.start((ctx) => ctx.reply("Welcome"));
 bot.help((ctx) => ctx.reply("Send me a link to the video on YouTube"));
 
+const getID = (url) => {
+  const regx = url.match(/v=[\w\-\_]{11}|e\/[\w\-\_]{11}/gi);
+  return regx.join("").substring(2);
+};
+
 bot.on("message", async (ctx) => {
+  const url = ctx.message.text;
+
   if (ctx.message.entities === undefined) {
     ctx.reply("👍");
-  } else if (ctx.message.entities[0].type === "url") {
-    const url = ctx.message.text;
-    const regx = url.match(/v=[\w\-\_]{11}|e\/[\w\-\_]{11}/gi);
-    const id = regx.join("").substring(2);
-
+  } else if (
+    (ctx.message.entities[0].type === "url" &&
+      url.includes("https://youtu.be/")) ||
+    url.includes("https://www.youtube.com/watch?v=")
+  ) {
     const options = {
       method: "GET",
-      url: `https://youtube-mp36.p.rapidapi.com/dl?id=${id}`,
+      url: `https://youtube-mp36.p.rapidapi.com/dl?id=${getID(url)}`,
       headers: {
         "x-rapidapi-key": process.env.API_KEY,
         "x-rapidapi-host": process.env.API_HOST,
@@ -31,6 +38,11 @@ bot.on("message", async (ctx) => {
         ctx.reply("Возникла ошибка. Повторите попытку");
         console.error(error);
       });
+  } else if (
+    !url.includes("https://youtu.be") ||
+    !url.includes("https://www.youtube.com")
+  ) {
+    ctx.reply("😒");
   }
 });
 
