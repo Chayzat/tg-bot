@@ -20,7 +20,7 @@ bot.on("message", async (ctx) => {
   } else if ((ctx.message.entities[0].type === "url" && isYTubeLink )) {
     const options = {
       method: "GET",
-      url: `${process.env.API_HOST}/dl?id=${getID(url)}`,
+      url: `youtube-mp36.p.rapidapi.com/dl?id=${getID(url)}`,
       headers: {
         "x-rapidapi-key": process.env.API_KEY,
         "x-rapidapi-host": process.env.API_HOST,
