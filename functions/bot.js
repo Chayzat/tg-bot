@@ -15,7 +15,7 @@ bot.on("message", async (ctx) => {
   const url = ctx.message.text;
   const isYTubeLink = url.includes("https://youtu.be/") || url.includes("https://www.youtube.com/watch?v=")
 
-  if (ctx.message.entities === undefined || !isYTubeLink) {
+  if (ctx.message.entities === undefined ) {
     ctx.reply("🙂Вставьте ссылку на YouTube. Ваш запрос не поддерживается.");
   } else if ((ctx.message.entities[0].type === "url" && isYTubeLink )) {
     const options = {
@@ -35,9 +35,9 @@ bot.on("message", async (ctx) => {
         console.error(error);
       });
   }
-  // else if (!isYTubeLink) {
-  //   ctx.reply("🙂Вставьте ссылку на YouTube. Ваш запрос не поддерживается.");
-  // }
+  else if (!isYTubeLink) {
+    ctx.reply("🙂Вставьте ссылку на YouTube. Ваш запрос не поддерживается.");
+  }
 });
 
 exports.handler = async (event) => {
