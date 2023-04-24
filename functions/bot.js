@@ -1,30 +1,26 @@
 require("dotenv").config();
 const axios = require("axios");
+const { Telegraf } = require("telegraf");
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const { Telegraf } = require("telegraf")
-const bot = new Telegraf(process.env.BOT_TOKEN)
-
-bot.start((ctx) => ctx.reply("Welcome"));
-bot.help((ctx) => ctx.reply("Send me a link to the video on YouTube"));
+bot.start((ctx) => ctx.reply("Конвертировать YouTube в mp3."));
+bot.help((ctx) => ctx.reply("Вставьте ссылку на YouTube."));
 
 const getID = (url) => {
-  const regx = url.match(/v=[\w\-\_]{11}|e\/[\w\-\_]{11}/gi);
-  return regx.join("").substring(2);
+  const id = url.match(/v=[\w\-\_]{11}|e\/[\w\-\_]{11}/gi);
+  return id.join("").substring(2);
 };
 
 bot.on("message", async (ctx) => {
   const url = ctx.message.text;
+  const isYTubeLink = url.includes("https://youtu.be/") || url.includes("https://www.youtube.com/watch?v=")
 
-  if (ctx.message.entities === undefined) {
-    ctx.reply("👍");
-  } else if (
-    (ctx.message.entities[0].type === "url" &&
-      url.includes("https://youtu.be/")) ||
-    url.includes("https://www.youtube.com/watch?v=")
-  ) {
+  if (ctx.message.entities === undefined || !isYTubeLink) {
+    ctx.reply("🙂Вставьте ссылку на YouTube. Ваш запрос не поддерживается.");
+  } else if ((ctx.message.entities[0].type === "url" && isYTubeLink )) {
     const options = {
       method: "GET",
-      url: `https://youtube-mp36.p.rapidapi.com/dl?id=${getID(url)}`,
+      url: `${process.env.API_HOST}/dl?id=${getID(url)}`,
       headers: {
         "x-rapidapi-key": process.env.API_KEY,
         "x-rapidapi-host": process.env.API_HOST,
@@ -33,40 +29,26 @@ bot.on("message", async (ctx) => {
 
     await axios
       .request(options)
-      // .then((response) => ctx.replyWithAudio(response.data.link))
       .then((response) => ctx.reply(response.data.link))
       .catch((error) => {
-        ctx.reply("Возникла ошибка. Повторите попытку");
+        ctx.reply("Произошла ошибка. Проверьте ссылку на корректность и повторите попытку.");
         console.error(error);
       });
-  } else if (
-    !url.includes("https://youtu.be") ||
-    !url.includes("https://www.youtube.com")
-  ) {
-    ctx.reply("😒");
   }
+  // else if (!isYTubeLink) {
+  //   ctx.reply("🙂Вставьте ссылку на YouTube. Ваш запрос не поддерживается.");
+  // }
 });
 
-// bot.launch();
-
-// process.once("SIGINT", () => bot.stop("SIGINT"));
-// process.once("SIGTERM", () => bot.stop("SIGTERM"));
-
-bot.command('thumbsup', async (ctx) => {
-    try {
-        ctx.reply('Here you go 👍!')
-    } catch (error) {
-        console.log('error', error)
-        ctx.reply('error sending image')
-    }
-})
-
-exports.handler = async event => {
+exports.handler = async (event) => {
   try {
-    await bot.handleUpdate(JSON.parse(event.body))
-    return { statusCode: 200, body: "" }
+    await bot.handleUpdate(JSON.parse(event.body));
+    return { statusCode: 200, body: "" };
   } catch (e) {
-    console.error("error in handler:", e)
-    return { statusCode: 400, body: "This endpoint is meant for bot and telegram communication" }
+    console.error("error in handler:", e);
+    return {
+      statusCode: 400,
+      body: "This endpoint is meant for bot and telegram communication",
+    };
   }
-}
+};
